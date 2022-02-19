@@ -13,7 +13,7 @@ const createTokenForUser = require('../helpers/createToken');
  *  Returns {token: jwt-token-string}.
  *
  */
-
+ 
 router.post('/register', async function(req, res, next) {
   try {
     const { username, password, first_name, last_name, email, phone } = req.body;
@@ -38,7 +38,8 @@ router.post('/register', async function(req, res, next) {
 router.post('/login', async function(req, res, next) {
   try {
     const { username, password } = req.body;
-    let user = User.authenticate(username, password);
+    // Bug #5 added await on this test so that the token is not created until the user is actually authenticated.
+    let user = await User.authenticate(username, password);
     const token = createTokenForUser(username, user.admin);
     return res.json({ token });
   } catch (err) {

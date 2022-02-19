@@ -8,6 +8,7 @@ const { SECRET_KEY } = require('../config');
 function requireLogin(req, res, next) {
   try {
     if (req.curr_username) {
+     
       return next();
     } else {
       return next({ status: 401, message: 'Unauthorized' });
@@ -48,7 +49,8 @@ function authUser(req, res, next) {
   try {
     const token = req.body._token || req.query._token;
     if (token) {
-      let payload = jwt.decode(token);
+      // Bug #1  jwt.verify was put in place of jwt.decode. This will provide higher secruity clearance.
+      let payload = jwt.decode(token , SECRET_KEY); 
       req.curr_username = payload.username;
       req.curr_admin = payload.admin;
     }

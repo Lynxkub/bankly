@@ -90,6 +90,10 @@ describe("POST /auth/login", function() {
     expect(username).toBe("u1");
     expect(admin).toBe(false);
   });
+  test('should throw error is unable to authenticate' , async function () {
+    const response = await request(app).post('/auth/login').send({username : 'u1' , password : 'wrong-password'});
+    expect(response.statusCode).toBe(401);
+  })
 });
 
 describe("GET /users", function() {
@@ -103,7 +107,27 @@ describe("GET /users", function() {
       .get("/users")
       .send({ _token: tokens.u1 });
     expect(response.statusCode).toBe(200);
-    expect(response.body.users.length).toBe(3);
+    // Altered test to show the response sending back the correct information instead of it jsut testing that 3 users exist
+    // expect(response.body.users.length).toBe(3);
+    expect(response.body.users).toEqual(
+      [
+        {
+          username : 'u1',
+          first_name: 'fn1',
+          last_name : 'ln1'
+        },
+        {
+          username : 'u2',
+          first_name: 'fn2',
+          last_name : 'ln2'
+        },
+        {
+          username : 'u3',
+          first_name: 'fn3',
+          last_name : 'ln3'
+        }
+      ]
+    )
   });
 });
 

@@ -65,9 +65,16 @@ class User {
     );
 
     const user = result.rows[0];
-
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
+  
+// Bug #5 adjusted this part of the function to check to make sure the password is valid before returning the user and authenticating them. 
+    if (user)  {
+      const isValid = await bcrypt.compare(password, user.password)
+      if(isValid === false) {
+        throw new ExpressError('Cannot authenticate' , 401);
+      }else{
+        return user;
+      }
+      
     } else {
       throw new ExpressError('Cannot authenticate', 401);
     }
@@ -78,14 +85,13 @@ class User {
    * [{username, first_name, last_name, email, phone}, ...]
    *
    * */
-
-  static async getAll(username, password) {
+// #Bug #3 Took out the username/password in the getAll function. No need for those to be required to run the function.
+  static async getAll() {
     const result = await db.query(
+      // Bug # 4 removing the email and phone from the SELECT query so that this function only returns the basic info on a user.
       `SELECT username,
                 first_name,
-                last_name,
-                email,
-                phone
+                last_name     
             FROM users 
             ORDER BY username`
     );
@@ -161,8 +167,8 @@ class User {
     if (!user) {
       throw new ExpressError('No such user', 404);
     }
-
-    return true;
+    // No need to return true on this. Error will be thrown if user does not exist. Otherwise, it is always true.
+    
   }
 }
 
