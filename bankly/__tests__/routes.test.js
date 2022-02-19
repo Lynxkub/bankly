@@ -90,6 +90,7 @@ describe("POST /auth/login", function() {
     expect(username).toBe("u1");
     expect(admin).toBe(false);
   });
+  // added test to show the authentication failing if unable to authenticate
   test('should throw error is unable to authenticate' , async function () {
     const response = await request(app).post('/auth/login').send({username : 'u1' , password : 'wrong-password'});
     expect(response.statusCode).toBe(401);
